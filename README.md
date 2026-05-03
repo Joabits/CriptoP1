@@ -42,6 +42,16 @@ streamlit run app.py
 pytest
 ```
 
+## Despliegue
+
+La app esta hecha con Streamlit. Para publicarla desde GitHub, la opcion recomendada es Streamlit Community Cloud usando `app.py` como archivo principal. Tambien puede desplegarse en Render con el comando de inicio:
+
+```bash
+streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+```
+
+Vercel no es la plataforma ideal para esta app porque Streamlit necesita un servidor Python persistente. Los detalles estan en `DEPLOYMENT.md`.
+
 ## Estructura
 
 ```text
