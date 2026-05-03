@@ -29,6 +29,26 @@ Build command: pip install -r requirements.txt
 Start command: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
 ```
 
+## Opcion Railway
+
+Railway puede desplegar esta app usando el archivo `railway.json` incluido en el proyecto.
+
+Configuracion usada:
+
+```text
+Builder: Nixpacks
+Start command: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+```
+
+Pasos desde GitHub:
+
+1. Entrar a https://railway.app/.
+2. Crear un proyecto nuevo.
+3. Elegir `Deploy from GitHub repo`.
+4. Seleccionar `Joabits/CriptoP1`.
+5. Railway detectara Python y usara `requirements.txt`.
+6. El comando de inicio saldra de `railway.json`.
+
 ## Sobre Vercel
 
 Vercel es excelente para aplicaciones frontend y funciones serverless, pero no es la opcion adecuada para una app Streamlit completa. Streamlit ejecuta un servidor Python persistente y usa comunicacion interactiva con el navegador. En Vercel, las funciones Python son serverless y no estan pensadas para mantener un proceso Streamlit corriendo como servidor web tradicional.
