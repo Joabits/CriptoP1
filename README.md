@@ -55,13 +55,14 @@ Los detalles estan en `DEPLOYMENT.md`.
 ## Estructura
 
 ```text
-cripto_grupo_f/      Libreria reusable
-app.py               Interfaz Streamlit
+cripto_grupo_f/      Libreria reusable con algoritmos y procesos
+interfaz/            Modulos visuales de Streamlit separados por seccion
+app.py               Entrada principal y menu de navegacion
 tests/               Pruebas automaticas
 docs/                Documentacion tecnica
 ```
 
-La interfaz no contiene los algoritmos directamente: llama a funciones del paquete `cripto_grupo_f`, cumpliendo el requisito de libreria propia.
+La interfaz no contiene los algoritmos directamente: cada modulo visual de `interfaz/` llama a funciones del paquete `cripto_grupo_f`, cumpliendo el requisito de libreria propia y manteniendo el codigo organizado.
 
 ## Funciones destacadas
 

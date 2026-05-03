@@ -125,6 +125,18 @@ El programa genera un criptograma y una tabla paso a paso con la posicion del di
 4. Ingresar datos de prueba.
 5. Revisar tablas, graficos y resultados.
 
+## Organizacion modular
+
+El proyecto esta dividido en dos capas principales:
+
+```text
+cripto_grupo_f/   Libreria reutilizable con la logica de seguridad y criptografia.
+interfaz/         Componentes de interfaz Streamlit separados por modulo.
+app.py            Punto de entrada que configura la pagina y enruta el menu lateral.
+```
+
+Esta separacion permite reutilizar la libreria desde pruebas, scripts o futuras interfaces sin depender directamente de Streamlit.
+
 ## Pruebas y validacion
 
 El proyecto incluye pruebas con `pytest` para verificar:
@@ -144,7 +156,7 @@ El proyecto incluye pruebas con `pytest` para verificar:
 |---|---|
 | Implementacion funcional | Seis secciones disponibles en la interfaz Streamlit. |
 | Correctitud criptografica | Cesar, analisis de frecuencias y Alberti tienen funciones separadas y pruebas. |
-| Diseno modular | La logica esta en `cripto_grupo_f/`; la interfaz solo consume la libreria. |
+| Diseno modular | La logica esta en `cripto_grupo_f/`, la interfaz esta separada por modulos en `interfaz/` y `app.py` solo enruta la navegacion. |
 | Interfaz | Menu lateral, formularios, tablas, metricas, graficos y simulaciones. |
 | Visualizacion | Diagramas de comunicacion, histograma de frecuencias y tablas paso a paso. |
 | Documentacion | Este documento cubre objetivo, algoritmo, matematica, ejemplo y manual. |
