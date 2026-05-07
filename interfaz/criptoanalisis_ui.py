@@ -17,27 +17,31 @@ def mostrar() -> None:
     with tab_taller:
         st.subheader("Ejemplo interactivo")
         texto = st.text_area("Texto plano para ejemplo Cesar", "LA CRIPTOGRAFIA PROTEGE LA INFORMACION")
-        clave = st.slider("Desplazamiento Cesar", 1, 25, 7)
-        cifrado = criptoanalisis.cifrar_cesar(texto, clave)
+        nombre_alfabeto = st.selectbox("Alfabeto", list(criptoanalisis.ALFABETOS_CESAR.keys()), index=1)
+        alfabeto = criptoanalisis.ALFABETOS_CESAR[nombre_alfabeto]
+        clave = st.slider("Desplazamiento Cesar", 1, len(alfabeto) - 1, 7)
+        cifrado = criptoanalisis.cifrar_cesar(texto, clave, alfabeto)
 
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("Criptograma")
             st.code(cifrado)
-            st.caption(f"Resultado de aplicar Cesar con desplazamiento {clave}.")
+            st.caption(
+                f"Resultado de aplicar Cesar con desplazamiento {clave} usando alfabeto {nombre_alfabeto.lower()}."
+            )
             st.subheader("Descifrado correcto")
-            st.code(criptoanalisis.descifrar_cesar(cifrado, clave))
+            st.code(criptoanalisis.descifrar_cesar(cifrado, clave, alfabeto))
             st.caption("Se muestra con la clave seleccionada para comprobar el resultado del taller.")
         with col2:
             st.subheader("Mejores candidatos por fuerza bruta")
-            candidatos = criptoanalisis.fuerza_bruta_cesar(cifrado)[:8]
+            candidatos = criptoanalisis.fuerza_bruta_cesar(cifrado, alfabeto)[:8]
             mostrar_tabla(candidatos)
 
         st.subheader("Lectura criptoanalitica")
         st.write(
             "Ahora el taller usa una pista tecnica: si una letra aparece mucho en el criptograma, podria corresponder a una letra frecuente del castellano. Como primera hipotesis se compara con E."
         )
-        analisis = criptoanalisis.analisis_criptoanalitico_cesar(cifrado)
+        analisis = criptoanalisis.analisis_criptoanalitico_cesar(cifrado, alfabeto)
         mostrar_tabla(analisis[:8])
 
         if analisis:
