@@ -12,47 +12,7 @@ def mostrar() -> None:
         "Laboratorio interactivo para comparar la busqueda exhaustiva con un analisis criptografico basado en patrones del idioma."
     )
 
-    tab_taller, tab_fundamento, tab_manual = st.tabs(
-        ["Taller", "Fundamento", "Manual de uso"]
-    )
-
-    with tab_fundamento:
-        st.subheader("Objetivo")
-        st.write(
-            "Demostrar que romper un cifrado clasico no siempre exige probar claves al azar: tambien se puede razonar sobre el algoritmo, el idioma y la estructura del criptograma."
-        )
-
-        st.subheader("Algoritmo usado")
-        st.write(
-            "El taller usa el cifrado Cesar, un cifrado por sustitucion monoalfabetica donde cada letra se desplaza una cantidad fija de posiciones dentro del alfabeto."
-        )
-        st.code(
-            """C = (P + k) mod 26
-P = (C - k) mod 26""",
-            language="text",
-        )
-        st.caption(
-            "P es la posicion de la letra original, C la posicion cifrada y k el desplazamiento o clave."
-        )
-
-        st.subheader("Explicacion matematica y criptografica")
-        st.write(
-            "Matematicamente, Cesar trabaja con aritmetica modular: cuando el desplazamiento supera la Z, el conteo vuelve a la A. Criptograficamente, su debilidad es que solo tiene 25 claves utiles y conserva patrones del idioma, por eso puede analizarse con palabras frecuentes como DE, LA, EL o EN."
-        )
-        mostrar_tabla(criptoanalisis.comparar_metodos())
-
-        st.subheader("Ejemplo")
-        st.write("Con clave 7, la letra A pasa a H, B pasa a I y Z pasa a G.")
-        mostrar_tabla(
-            [
-                {"texto_plano": "LA", "clave": 7, "criptograma": criptoanalisis.cifrar_cesar("LA", 7)},
-                {
-                    "texto_plano": "CRIPTO",
-                    "clave": 7,
-                    "criptograma": criptoanalisis.cifrar_cesar("CRIPTO", 7),
-                },
-            ]
-        )
+    tab_taller, tab_guia = st.tabs(["Taller", "Guia comparativa"])
 
     with tab_taller:
         st.subheader("Ejemplo interactivo")
@@ -65,25 +25,65 @@ P = (C - k) mod 26""",
             st.subheader("Criptograma")
             st.code(cifrado)
             st.caption(f"Resultado de aplicar Cesar con desplazamiento {clave}.")
+            st.subheader("Descifrado correcto")
+            st.code(criptoanalisis.descifrar_cesar(cifrado, clave))
+            st.caption("Se muestra con la clave seleccionada para comprobar el resultado del taller.")
         with col2:
             st.subheader("Mejores candidatos por fuerza bruta")
             candidatos = criptoanalisis.fuerza_bruta_cesar(cifrado)[:8]
             mostrar_tabla(candidatos)
 
+        st.subheader("Lectura criptoanalitica")
+        st.write(
+            "Ahora el taller usa una pista tecnica: si una letra aparece mucho en el criptograma, podria corresponder a una letra frecuente del castellano. Como primera hipotesis se compara con E."
+        )
+        analisis = criptoanalisis.analisis_criptoanalitico_cesar(cifrado)
+        mostrar_tabla(analisis[:8])
+
+        if analisis:
+            mejor = analisis[0]
+            st.success(
+                f"Hipotesis prioritaria: probar clave {mejor['clave_sugerida']}. Resultado: {mejor['texto_posible']}."
+            )
+            if mejor["puntaje_linguistico"] == 0:
+                st.warning(
+                    "Con textos muy cortos hay poca evidencia estadistica; por eso conviene confirmar con la clave elegida o usar un texto mas largo."
+                )
+
         st.info(
-            "La fuerza bruta prueba todas las claves; el criptoanalisis intenta reducir el trabajo usando patrones del idioma."
+            "La fuerza bruta prueba claves una por una; el criptoanalisis explica por que ciertas claves merecen revisarse primero."
         )
 
-    with tab_manual:
-        st.subheader("Manual de uso")
+    with tab_guia:
+        st.subheader("Fuerza bruta: ataque burdo")
         st.write(
-            "1. Escriba un mensaje en el campo de texto del taller.\n"
-            "2. Elija un desplazamiento Cesar entre 1 y 25.\n"
-            "3. Observe el criptograma generado automaticamente.\n"
-            "4. Revise la tabla de fuerza bruta: cada fila prueba una clave posible.\n"
-            "5. Use el puntaje linguistico para identificar candidatos mas probables.\n"
-            "6. Compruebe que la clave correcta recupera un texto legible."
+            "La fuerza bruta es una busqueda exhaustiva: intenta todas las claves posibles hasta encontrar una salida legible o verificable. En Cesar funciona porque solo existen 25 desplazamientos utiles; en sistemas modernos, el espacio de claves vuelve este enfoque impracticable."
         )
+        st.code(
+            """para cada clave posible:
+    descifrar el criptograma
+    revisar si el texto parece correcto""",
+            language="text",
+        )
+
+        st.subheader("Criptoanalisis: ataque tecnico y cientifico")
+        st.write(
+            "El criptoanalisis no se limita a probar. Observa el criptosistema, el idioma, la estructura matematica y los patrones del criptograma para reducir la busqueda. Por eso formula hipotesis: letras frecuentes, palabras probables, repeticiones y debilidades del algoritmo."
+        )
+        st.code(
+            """observar el criptograma
+medir frecuencias y patrones
+formular una hipotesis
+probar primero las claves con mejor respaldo""",
+            language="text",
+        )
+
+        st.subheader("Comparacion directa")
+        mostrar_tabla(criptoanalisis.comparar_metodos())
+
+        st.subheader("Definiciones de respaldo")
+        mostrar_tabla(criptoanalisis.definiciones_autores())
+
         st.warning(
-            "Este taller es educativo: Cesar no debe usarse para proteger informacion real porque su espacio de claves es demasiado pequeno."
+            "Mensaje para la exposicion: fuerza bruta significa insistir; criptoanalisis significa investigar antes de insistir."
         )

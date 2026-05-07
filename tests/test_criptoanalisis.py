@@ -14,3 +14,18 @@ def test_fuerza_bruta_incluye_clave_correcta():
     candidatos = criptoanalisis.fuerza_bruta_cesar(cifrado)
 
     assert any(item["clave_probada"] == 9 and item["texto_posible"] == texto for item in candidatos)
+
+
+def test_definiciones_autores_incluyen_respaldo_teorico():
+    definiciones = criptoanalisis.definiciones_autores()
+
+    assert any(item["autor"] == "Kerckhoffs" for item in definiciones)
+    assert any("busqueda exhaustiva" in item["idea"] for item in definiciones)
+
+
+def test_analisis_criptoanalitico_sugiere_clave_por_frecuencia():
+    texto = "ESTE TEXTO REPITE E PARA CREAR UNA PISTA TECNICA"
+    cifrado = criptoanalisis.cifrar_cesar(texto, 4)
+    analisis = criptoanalisis.analisis_criptoanalitico_cesar(cifrado)
+
+    assert analisis[0]["clave_sugerida"] == 4
