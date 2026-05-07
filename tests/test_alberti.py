@@ -31,3 +31,24 @@ def test_alberti_cifra_y_descifra_con_rotacion_izquierda():
 
 def test_posicion_desde_letra_normaliza_entrada():
     assert alberti.posicion_desde_letra("d") == 3
+
+
+def test_rotar_disco_alinea_clave_con_a_exterior():
+    assert alberti.rotar_disco(alberti.posicion_desde_letra("f"))[0] == "F"
+
+
+def test_disco_escolar_usa_alfabeto_desplazado():
+    posicion_f = alberti.posicion_desde_letra("f")
+
+    assert alberti.rotar_disco(posicion_f, tipo_disco=alberti.TIPO_DISCO_ESCOLAR).startswith("FGHIJ")
+
+
+def test_alberti_escolar_cifra_y_descifra_con_misma_configuracion():
+    texto = "HOLA"
+    cifrado = alberti.cifrar(texto, posicion_inicial=5, rotar_cada=50, tipo_disco=alberti.TIPO_DISCO_ESCOLAR)
+    descifrado = alberti.descifrar(
+        cifrado["texto_salida"], posicion_inicial=5, rotar_cada=50, tipo_disco=alberti.TIPO_DISCO_ESCOLAR
+    )
+
+    assert cifrado["texto_salida"] == "MTQF"
+    assert descifrado["texto_salida"] == texto
