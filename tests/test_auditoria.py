@@ -12,6 +12,7 @@ from cripto_grupo_f.auditoria import (
 # PRUEBAS: GENERADOR DE EXPEDIENTE
 # ─────────────────────────────────────────────
 
+#generar_expediente()
 def test_expediente_tiene_campos_correctos():
     """El expediente debe tener todos los campos requeridos."""
     expediente = generar_expediente()
@@ -46,6 +47,7 @@ def test_expediente_es_aleatorio():
 # PRUEBAS: BANCO DE PREGUNTAS
 # ─────────────────────────────────────────────
 
+#obtener_pregunta()
 def test_pregunta_tiene_campos_correctos():
     """Cada pregunta debe tener clave, texto, principio y articulo."""
     for clave in ["P1", "P2", "P3", "P4"]:
@@ -88,6 +90,7 @@ def test_preguntas_son_aleatorias():
 # PRUEBAS: RETROALIMENTACIÓN
 # ─────────────────────────────────────────────
 
+#obtener_retroalimentacion()
 def test_retroalimentacion_respuesta_si():
     """Respuesta Sí debe devolver mensaje positivo."""
     mensaje = obtener_retroalimentacion("Confidencialidad", "la", True)
@@ -115,6 +118,7 @@ def test_retroalimentacion_articulo_el():
 # PRUEBAS: MOTOR DE EVALUACIÓN — PUNTAJES
 # ─────────────────────────────────────────────
 
+#calcular_puntaje()
 def test_puntaje_4_correctas():
     """4 Sí → Puntaje 12 → Riesgo Bajo."""
     resultado = calcular_puntaje([True, True, True, True])

@@ -24,7 +24,7 @@ SECCIONES = {
     "Inicio": inicio.mostrar,
     "1. Mapeo de Debilidades": debilidades_ui.mostrar,
     "2. Seguridad en Comunicaciones": comunicaciones_ui.mostrar,
-    "3. Fuerza Bruta vs Criptoanalisis": criptoanalisis_ui.mostrar,
+    "3. Taller de Criptoanalisis Elegante": criptoanalisis_ui.mostrar,
     "4. Auditoria Academica": auditoria_ui.mostrar,
     "5. Frecuencias ESTIRANDO": frecuencias_ui.mostrar,
     "6. Disco de Alberti": alberti_ui.mostrar,
