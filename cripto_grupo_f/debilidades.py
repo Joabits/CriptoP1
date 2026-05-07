@@ -307,3 +307,8 @@ class MapeoDebilidadesCripto:
             "activos_analizados": len(set(m.activo.id for m in self.mapeos_realizados)),
             "vulnerabilidades_encontradas": len(set(m.vulnerabilidad.id for m in self.mapeos_realizados))
         }
+    def agregar_nuevo_activo(self, id_custom: str, nombre: str, tipo: TipoActivo, descripcion: str, criticidad: int):
+        """Permite registrar un nuevo activo dinámicamente"""
+        nuevo = Activo(id_custom, nombre, tipo, descripcion, criticidad)
+        self.activos_db[id_custom] = nuevo
+        return nuevo

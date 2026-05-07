@@ -486,3 +486,51 @@ def mostrar():
 if __name__ == "__main__":
     mostrar()
         
+def formulario_nuevo_activo():
+    """Formulario para agregar activos dinámicamente"""
+    st.sidebar.markdown("### ➕ Registrar Nuevo Activo")
+    with st.sidebar.form("form_nuevo_activo"):
+        nombre = st.text_input("Nombre del Activo", placeholder="Ej: Base de Datos RRHH")
+        tipo = st.selectbox("Categoría", options=[t for t in TipoActivo], format_func=lambda x: x.value)
+        desc = st.text_area("Descripción breve")
+        crit = st.slider("Criticidad (1-5)", 1, 5, 3)
+        
+        btn_crear = st.form_submit_button("Guardar Activo")
+        
+        if btn_crear:
+            if nombre and desc:
+                # Generar un ID único basado en el nombre
+                nuevo_id = f"CUSTOM_{nombre.replace(' ', '_').upper()}"
+                st.session_state.motor_debilidades.agregar_nuevo_activo(
+                    nuevo_id, nombre, tipo, desc, crit
+                )
+                st.success(f"✅ '{nombre}' registrado!")
+                st.rerun()
+            else:
+                st.error("Por favor, llena todos los campos.")
+
+def sidebar_info():
+    """Barra lateral actualizada con el formulario"""
+    with st.sidebar:
+        st.image("https://img.icons8.com/fluency/96/security-checked.png", width=80)
+        st.markdown("## 🔐 Módulo de Debilidades")
+        st.markdown("---")
+        
+        # --- AQUÍ INSERTAMOS EL NUEVO FORMULARIO ---
+        formulario_nuevo_activo()
+        st.markdown("---")
+        
+        st.markdown("### 🎯 Metodología")
+        st.markdown("""
+        1. **Clasificación** (HW/SW/Datos)
+        2. **Asociación** (CWE)
+        3. **Cálculo** de riesgos
+        4. **Recomendaciones**
+        """)
+        
+        if st.button("🔄 Resetear Todo", use_container_width=True):
+            # Al resetear, reiniciamos el motor para limpiar los creados si se desea
+            st.session_state.motor_debilidades = MapeoDebilidadesCripto()
+            st.session_state.paso_actual = 1
+            st.session_state.resultados_actuales = None
+            st.rerun()
