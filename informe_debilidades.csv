@@ -1,0 +1,5 @@
+ID,Vulnerabilidad,Amenaza,Probabilidad,Impacto,Riesgo
+CWE-326,Clave criptográfica débil,Criptoanálisis,100%,⭐⭐⭐⭐,8.0
+CWE-327,Algoritmo criptográfico roto o inseguro,Criptoanálisis,100%,⭐⭐⭐⭐,8.0
+SW-001,Generación débil de números aleatorios,Criptoanálisis,100%,⭐⭐⭐⭐,8.0
+CWE-329,No usar vector de inicialización (IV),Criptoanálisis,96%,⭐⭐⭐,5.76
