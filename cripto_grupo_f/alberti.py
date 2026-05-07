@@ -2,65 +2,52 @@
 
 from __future__ import annotations
 
-import random
 import unicodedata
 
-from .texto import ALFABETO as _ALFABETO_DEFECTO, normalizar
+from .texto import normalizar
 
 
-ALFABETO = _ALFABETO_DEFECTO
-ALFABETO_ES = "ABCDEFGHIJKLMN" + "\u00d1" + "OPQRSTUVWXYZ"
-DISCO_INTERIOR = "phqgiumeaylnofdxjkrcvstzwb".upper()
+# Alfabeto exterior historico de Alberti: letras latinas sin H, J, K, U, W, Y + numeros 1-4
+ALFABETO_EXTERIOR = "ABCDEFGILMNOPQRSTVXZ1234"
+
+# Alfabeto interior historico de Alberti: letras minusculas mezcladas + &, h, k, y
+# El disco interior tiene 24 simbolos: letras en minuscula (sin j, u, w) + &, h, k, y
+ALFABETO_INTERIOR = "&hkyabcdefgilmnopqrstvxz"
+
 TIPO_DISCO_CLASICO = "clasico"
 TIPO_DISCO_ESCOLAR = "escolar"
 
 
-def _disco_interior_para(alfabeto: str, tipo_disco: str = TIPO_DISCO_CLASICO) -> str:
-    if tipo_disco == TIPO_DISCO_ESCOLAR:
-        return alfabeto
-    if alfabeto == _ALFABETO_DEFECTO:
-        return DISCO_INTERIOR
-    rng = random.Random(42)
-    letras = list(alfabeto)
-    rng.shuffle(letras)
-    return "".join(letras)
-
-
-def _normalizar_para(texto: str, alfabeto: str) -> str:
+def _normalizar_texto(texto: str) -> str:
+    """Convierte a mayusculas y elimina acentos."""
     texto = texto.upper()
-    if "\u00d1" in alfabeto:
-        salida = []
-        for caracter in texto:
-            if caracter == "\u00d1":
-                salida.append(caracter)
-                continue
-            descomp = unicodedata.normalize("NFD", caracter)
-            limpio = "".join(c for c in descomp if unicodedata.category(c) != "Mn")
-            salida.append(limpio)
-        return "".join(salida)
-    return normalizar(texto)
+    salida = []
+    for caracter in texto:
+        descomp = unicodedata.normalize("NFD", caracter)
+        limpio = "".join(c for c in descomp if unicodedata.category(c) != "Mn")
+        salida.append(limpio)
+    return "".join(salida)
 
 
 def rotar_disco(
     posicion: int,
-    alfabeto: str | None = None,
     tipo_disco: str = TIPO_DISCO_CLASICO,
 ) -> str:
-    alfabeto = alfabeto or ALFABETO
-    disco = _disco_interior_para(alfabeto, tipo_disco)
-    posicion %= len(alfabeto)
-    letra_clave = alfabeto[posicion]
-    indice_clave = disco.index(letra_clave)
-    return disco[indice_clave:] + disco[:indice_clave]
+    """Rota el disco interior segun la posicion dada."""
+    n = len(ALFABETO_INTERIOR)
+    posicion %= n
+    if tipo_disco == TIPO_DISCO_ESCOLAR:
+        return ALFABETO_INTERIOR[posicion:] + ALFABETO_INTERIOR[:posicion]
+    # Clasico: el simbolo en ALFABETO_INTERIOR en la posicion dada queda alineado con el primer simbolo exterior
+    return ALFABETO_INTERIOR[posicion:] + ALFABETO_INTERIOR[:posicion]
 
 
-def posicion_desde_letra(letra: str, alfabeto: str | None = None) -> int:
-    alfabeto = alfabeto or ALFABETO
-    letra_normalizada = _normalizar_para(letra, alfabeto)
-    letra_normalizada = "".join(c for c in letra_normalizada if c in alfabeto)
-    if not letra_normalizada:
-        raise ValueError("La posicion debe contener una letra del alfabeto")
-    return alfabeto.index(letra_normalizada[0])
+def posicion_desde_letra(letra: str) -> int:
+    """Devuelve el indice de una letra en el alfabeto interior."""
+    letra = letra.lower()
+    if letra not in ALFABETO_INTERIOR:
+        raise ValueError(f"'{letra}' no pertenece al alfabeto interior")
+    return ALFABETO_INTERIOR.index(letra)
 
 
 def cifrar(
@@ -69,13 +56,12 @@ def cifrar(
     rotar_cada: int = 5,
     direccion: str = "derecha",
     avance: int = 1,
-    alfabeto: str | None = None,
     tipo_disco: str = TIPO_DISCO_CLASICO,
 ) -> dict[str, object]:
     return _procesar(
         texto, posicion_inicial, rotar_cada,
         modo="cifrar", direccion=direccion, avance=avance,
-        alfabeto=alfabeto or ALFABETO, tipo_disco=tipo_disco,
+        tipo_disco=tipo_disco,
     )
 
 
@@ -85,13 +71,12 @@ def descifrar(
     rotar_cada: int = 5,
     direccion: str = "derecha",
     avance: int = 1,
-    alfabeto: str | None = None,
     tipo_disco: str = TIPO_DISCO_CLASICO,
 ) -> dict[str, object]:
     return _procesar(
         criptograma, posicion_inicial, rotar_cada,
         modo="descifrar", direccion=direccion, avance=avance,
-        alfabeto=alfabeto or ALFABETO, tipo_disco=tipo_disco,
+        tipo_disco=tipo_disco,
     )
 
 
@@ -102,7 +87,6 @@ def _procesar(
     modo: str,
     direccion: str,
     avance: int,
-    alfabeto: str,
     tipo_disco: str,
 ) -> dict[str, object]:
     if rotar_cada <= 0:
@@ -112,64 +96,67 @@ def _procesar(
     if direccion not in {"derecha", "izquierda"}:
         raise ValueError("direccion debe ser 'derecha' o 'izquierda'")
 
-    texto_normalizado = _normalizar_para(texto, alfabeto)
+    n_ext = len(ALFABETO_EXTERIOR)
+    n_int = len(ALFABETO_INTERIOR)
+    assert n_ext == n_int, "Los alfabetos deben tener el mismo tamano"
+
+    texto_normalizado = _normalizar_texto(texto)
     resultado = []
     pasos = []
     letras_procesadas = 0
-    posicion_actual = posicion_inicial % len(alfabeto)
+    posicion_actual = posicion_inicial % n_int
 
     for caracter in texto_normalizado:
-        if caracter not in alfabeto:
+        if caracter not in ALFABETO_EXTERIOR:
             resultado.append(caracter)
-            pasos.append(
-                {
-                    "entrada": caracter,
-                    "salida": caracter,
-                    "posicion_disco": posicion_actual,
-                    "alfabeto_interior": rotar_disco(posicion_actual, alfabeto, tipo_disco),
-                    "accion": "Se conserva porque no es letra",
-                }
-            )
+            pasos.append({
+                "entrada": caracter,
+                "salida": caracter,
+                "posicion_disco": posicion_actual,
+                "alfabeto_interior": rotar_disco(posicion_actual, tipo_disco),
+                "accion": "Se conserva porque no es letra del alfabeto exterior",
+            })
             continue
 
         if letras_procesadas > 0 and letras_procesadas % rotar_cada == 0:
             if direccion == "derecha":
-                posicion_actual = (posicion_actual + avance) % len(alfabeto)
+                posicion_actual = (posicion_actual + avance) % n_int
             else:
-                posicion_actual = (posicion_actual - avance) % len(alfabeto)
+                posicion_actual = (posicion_actual - avance) % n_int
 
-        alfabeto_interior = rotar_disco(posicion_actual, alfabeto, tipo_disco)
+        alfabeto_interior_rotado = rotar_disco(posicion_actual, tipo_disco)
+
         if modo == "cifrar":
-            indice = alfabeto.index(caracter)
-            salida = alfabeto_interior[indice]
+            indice = ALFABETO_EXTERIOR.index(caracter)
+            salida = alfabeto_interior_rotado[indice]
         elif modo == "descifrar":
-            indice = alfabeto_interior.index(caracter)
-            salida = alfabeto[indice]
+            if caracter not in alfabeto_interior_rotado:
+                resultado.append(caracter)
+                continue
+            indice = alfabeto_interior_rotado.index(caracter)
+            salida = ALFABETO_EXTERIOR[indice]
         else:
             raise ValueError("modo debe ser 'cifrar' o 'descifrar'")
 
         resultado.append(salida)
         letras_procesadas += 1
-        pasos.append(
-            {
-                "entrada": caracter,
-                "salida": salida,
-                "posicion_disco": posicion_actual,
-                "letra_clave": alfabeto[posicion_actual],
-                "alfabeto_exterior": alfabeto,
-                "alfabeto_interior": alfabeto_interior,
-                "accion": f"{modo.capitalize()} con clave {alfabeto[posicion_actual]} en posicion {posicion_actual}",
-            }
-        )
+        pasos.append({
+            "entrada": caracter,
+            "salida": salida,
+            "posicion_disco": posicion_actual,
+            "simbolo_clave": ALFABETO_INTERIOR[posicion_actual],
+            "alfabeto_exterior": ALFABETO_EXTERIOR,
+            "alfabeto_interior": alfabeto_interior_rotado,
+            "accion": f"{modo.capitalize()} '{caracter}' → '{salida}' con clave '{ALFABETO_INTERIOR[posicion_actual]}' (pos {posicion_actual})",
+        })
 
     return {
         "modo": modo,
-        "alfabeto": alfabeto,
         "tipo_disco": tipo_disco,
         "texto_entrada": texto_normalizado,
         "texto_salida": "".join(resultado),
-        "posicion_inicial": posicion_inicial % len(alfabeto),
-        "letra_inicial": alfabeto[posicion_inicial % len(alfabeto)],
+        "posicion_inicial": posicion_inicial % n_int,
+        "simbolo_inicial": ALFABETO_INTERIOR[posicion_inicial % n_int],
         "rotar_cada": rotar_cada,
         "direccion": direccion,
         "avance": avance,
