@@ -192,7 +192,7 @@ def mostrar_matriz_riesgos():
             labels=dict(color="Riesgo (0-10)")
         )
         fig.update_layout(height=500, width=900)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         
         # Explicación matemática
         with st.expander("📐 Explicación Matemática del Algoritmo"):
@@ -307,8 +307,8 @@ def paso_resultados():
         else:
             return 'background-color: #00cc66; color: white'
     
-    st.dataframe(df.style.applymap(color_riesgo, subset=['Riesgo']), 
-                 use_container_width=True, height=400)
+    st.dataframe(df.style.map(color_riesgo, subset=['Riesgo']), 
+                 width="stretch", height=400)
     
     # Gráfico de barras
     fig = go.Figure()
@@ -333,7 +333,7 @@ def paso_resultados():
         paper_bgcolor='rgba(0,0,0,0)',
         font=dict(color='white')
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Recomendaciones
     st.markdown("### 💡 Recomendaciones Prioritarias")
@@ -355,12 +355,12 @@ def paso_resultados():
     # Botones navegación
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🔄 Analizar otro activo", use_container_width=True):
+        if st.button("🔄 Analizar otro activo", width="stretch"):
             st.session_state.paso_actual = 1
             st.session_state.resultados_actuales = None
             st.rerun()
     with col2:
-        if st.button("📥 Exportar Informe CSV", use_container_width=True):
+        if st.button("📥 Exportar Informe CSV", width="stretch"):
             df.to_csv("informe_debilidades.csv", index=False)
             st.success("✅ Informe exportado como 'informe_debilidades.csv'")
 
@@ -400,7 +400,7 @@ def mostrar_estadisticas_globales():
             color_discrete_sequence=['#00d2ff']
         )
         fig.update_layout(height=400)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
 def sidebar_info():
     """Barra lateral con información"""
@@ -442,7 +442,7 @@ def sidebar_info():
         - **Tipos Amenaza:** {len(TipoAmenaza)}
         """)
         
-        if st.button("🔄 Resetear Análisis", use_container_width=True):
+        if st.button("🔄 Resetear Análisis", width="stretch"):
             st.session_state.paso_actual = 1
             st.session_state.resultados_actuales = None
             st.rerun()
@@ -528,7 +528,7 @@ def sidebar_info():
         4. **Recomendaciones**
         """)
         
-        if st.button("🔄 Resetear Todo", use_container_width=True):
+        if st.button("🔄 Resetear Todo", width="stretch"):
             # Al resetear, reiniciamos el motor para limpiar los creados si se desea
             st.session_state.motor_debilidades = MapeoDebilidadesCripto()
             st.session_state.paso_actual = 1

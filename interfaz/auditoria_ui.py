@@ -320,7 +320,7 @@ def pantalla_inicio():
             '</div></div>',
             unsafe_allow_html=True,
         )
-        if st.button("▶  INICIAR AUDITORÍA", use_container_width=True):
+        if st.button("▶  INICIAR AUDITORÍA", width="stretch"):
             st.session_state.expediente   = generar_expediente()
             st.session_state.sesion       = obtener_sesion_preguntas()
             st.session_state.pregunta_idx = 0
@@ -364,7 +364,7 @@ def pantalla_expediente():
             unsafe_allow_html=True,
         )
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("INICIAR PREGUNTAS DE CONTROL", use_container_width=True):
+        if st.button("INICIAR PREGUNTAS DE CONTROL", width="stretch"):
             st.session_state.pantalla = "preguntas"
             st.rerun()
 
@@ -404,17 +404,17 @@ def pantalla_preguntas():
             st.markdown(f'<div class="{clase}">{retro}</div>', unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
             label = "SIGUIENTE PREGUNTA ▶" if idx + 1 < total else "VER VEREDICTO FINAL ▶"
-            if st.button(label, use_container_width=True):
+            if st.button(label, width="stretch"):
                 st.session_state.pregunta_idx += 1
                 st.session_state.mostrar_retro = False
                 st.rerun()
         else:
             c1, c2 = st.columns(2)
             with c1:
-                if st.button("✔  SÍ", use_container_width=True):
+                if st.button("✔  SÍ", width="stretch"):
                     _registrar_respuesta(pregunta, True)
             with c2:
-                if st.button("✘  NO", use_container_width=True):
+                if st.button("✘  NO", width="stretch"):
                     _registrar_respuesta(pregunta, False)
 
 
@@ -486,7 +486,7 @@ def pantalla_veredicto():
             )
 
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("🔄  NUEVA AUDITORÍA", use_container_width=True):
+        if st.button("🔄  NUEVA AUDITORÍA", width="stretch"):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
